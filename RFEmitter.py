@@ -26,20 +26,20 @@ class RFEmitter:
         self.send('start_keyword', attrs, name)
 
 
+    def log_message(self, message):
+        #self.send('log_message', message)
+        return
+
+    def end_keyword(self, name, attrs):
+        self.send('end_keyword', attrs, name)
+
+
     def end_test(self, name, attrs):
         self.send('end_test', attrs, name)
 
 
     def end_suite(self, name, attrs):
         self.send('end_suite', attrs, name)
-
-
-    def message(self, message):
-        self.send('log_message', message)
-
-
-    def log_message(self, message):
-        self.send('log_message', message)
 
 
     def close(self):
@@ -49,10 +49,28 @@ class RFEmitter:
         self.ws.close()
 
 
+    def toUTCFormat(self, date):
+        print("Converting %s" % date)
+        millis = date[-4:]
+        utcNoMillis = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(time.mktime(time.strptime(date[:-4], "%Y%m%d %H:%M:%S"))))
+        return utcNoMillis + millis + "Z"
+
     def send(self, msgType, dict, name = None):
         dict['msgType'] = msgType
+        
+        # always include name
         if name is not None:
             dict['name'] = name
+        
+        # update timestamps to UTC format
+        if 'starttime' in dict :
+            dict['starttime'] = self.toUTCFormat(dict['starttime'])
+        if 'endtime' in dict :
+            dict['endtime'] = self.toUTCFormat(dict['endtime'])
+        if 'timestamp' in dict :
+            dict['timestamp'] = self.toUTCFormat(dict['timestamp'])
+
+        # send the full dict
         data = json.dumps(dict, sort_keys=True, indent=4, separators=(',', ': ')) 
         print("\n## Sending : \n %s" % data)
         self.ws.send(data)
