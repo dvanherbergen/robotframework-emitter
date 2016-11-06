@@ -49,7 +49,6 @@ class RFEmitter:
 
 
     def toUTCFormat(self, date):
-        print("Converting %s" % date)
         millis = date[-4:]
         utcNoMillis = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(time.mktime(time.strptime(date[:-4], "%Y%m%d %H:%M:%S"))))
         return utcNoMillis + millis + "Z"
