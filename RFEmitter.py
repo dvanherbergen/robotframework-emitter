@@ -27,8 +27,7 @@ class RFEmitter:
 
 
     def log_message(self, message):
-        #self.send('log_message', message)
-        return
+        self.send('log_message', message)
 
     def end_keyword(self, name, attrs):
         self.send('end_keyword', attrs, name)
@@ -72,5 +71,5 @@ class RFEmitter:
 
         # send the full dict
         data = json.dumps(dict, sort_keys=True, indent=4, separators=(',', ': ')) 
-        print("\n## Sending : \n %s" % data)
+        # print("\n## Sending : \n %s" % data)
         self.ws.send(data)
