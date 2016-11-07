@@ -53,9 +53,23 @@ class RFEmitter:
         utcNoMillis = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(time.mktime(time.strptime(date[:-4], "%Y%m%d %H:%M:%S"))))
         return utcNoMillis + millis + "Z"
 
+    def removeEntry(self, dict, name):
+        if name in dict:
+            del dict[name]
+
     def send(self, msgType, dict, name = None):
         dict['msgType'] = msgType
         
+        # remove unused attributes
+        self.removeEntry(dict, 'metadata')
+        self.removeEntry(dict, 'source')
+        self.removeEntry(dict, 'suites')
+        self.removeEntry(dict, 'longname')
+        self.removeEntry(dict, 'elapsedtime')       
+        self.removeEntry(dict, 'statistics')  
+        self.removeEntry(dict, 'tags')   
+        self.removeEntry(dict, 'assign')
+
         # always include name
         if name is not None:
             dict['name'] = name
