@@ -1,6 +1,7 @@
 import json
 import time
-from websocket import create_connection
+import requests
+import sys
 
 """ 
 Transmit all test execution events to a given target server. 
@@ -9,10 +10,13 @@ class RFEmitter:
 
     ROBOT_LISTENER_API_VERSION = 2
 
-    def __init__(self, targetUrl, identifier):
-        print('\n## Opening WS connection to %s' % targetUrl)
-        self.ws = create_connection(targetUrl)
-
+    def __init__(self, targetHost, suiteId):
+        result = requests.get(targetHost + "/tf/v1/suites/" + suiteId + "/nextId")
+        if result.status_code == 200:
+            self.url = targetHost + "/tf/v1/suites/" + suiteId + "/runs/" + result.text
+        else :
+            print("Upload service unavailable: %s" % result.text)
+            sys.exit()
 
     def start_suite(self, name, attrs):
         self.send('start_suite', attrs, name)
@@ -39,13 +43,6 @@ class RFEmitter:
 
     def end_suite(self, name, attrs):
         self.send('end_suite', attrs, name)
-
-
-    def close(self):
-        print('\n## Closing WS connection.')
-        # leave a little time for the server to finish reading the data.
-        time.sleep(0.3)
-        self.ws.close()
 
 
     def toUTCFormat(self, date):
@@ -84,5 +81,7 @@ class RFEmitter:
 
         # send the full dict
         data = json.dumps(dict, sort_keys=True, indent=4, separators=(',', ': ')) 
-        # print("\n## Sending : \n %s" % data)
-        self.ws.send(data)
+        print("\n## Sending to %s : \n %s " % (self.url, data))
+        result = requests.post(self.url, data)
+        if result.status_code <> 200 :
+            print("Error during upload: %s" % result.text)

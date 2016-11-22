@@ -4,10 +4,10 @@ robotframework-emitter is a listener for robotframework that emits all test exec
 
 ## Usage
 
-To use this listener, you need to install the python websocket client:
+To use this listener, you need to install the python requests library:
 
 ```
-pip install websocket-client
+pip install requests
 ```
 
 Start robotframework with the a robot framework listener argument:
@@ -33,4 +33,3 @@ robot tests.robot
 
 - Send events asynchronously
 - Error handling
-- Filter out unused attributes (e.g. statistics) to reduce message size?
