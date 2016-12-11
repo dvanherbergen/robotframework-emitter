@@ -70,5 +70,7 @@ class EmitterTest(unittest.TestCase):
         # if a call was made, we would get an connection error here  
 
 
+
+
 if __name__ == '__main__':
     unittest.main()
